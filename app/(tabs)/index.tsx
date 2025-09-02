@@ -1,9 +1,11 @@
 import { StyleSheet } from 'react-native';
 
+import HomeScreen from '@/Screens/HomeScreen';
 import React, { useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, Text, TextInput } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-export default function HomeScreen() {
+export default function Home() {
   const [isLoggedIn, setLoggedIn] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,9 +21,9 @@ export default function HomeScreen() {
   };
 
     return (
-  <View style={styles.container}>
+  <SafeAreaProvider>
     {!isLoggedIn ? (
-      <View style={styles.form}>
+      <SafeAreaView style={styles.form}>
         <Text style={styles.title}>Login</Text>
 
         {error && <Text style={styles.error}>{error}</Text>}
@@ -46,17 +48,15 @@ export default function HomeScreen() {
         <Pressable style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Logg inn</Text>
         </Pressable>
-      </View>
+      </SafeAreaView>
     ) : (
-      <View style={styles.center}>
-        <Text style={styles.title}>Logget inn som {email}</Text>
-        <Pressable style={styles.button} onPress={() => setLoggedIn(false)}>
-          <Text style={styles.buttonText}>Logg ut</Text>
-        </Pressable>
-      </View>
-    )}
-  </View>
-);
+        <SafeAreaView>
+          <HomeScreen />
+        </SafeAreaView>
+        )
+      }
+    </SafeAreaProvider>
+  );
 }
 
 const styles = StyleSheet.create({
