@@ -50,7 +50,7 @@ export default function Home() {
         </Pressable>
       </SafeAreaView>
     ) : (
-        <SafeAreaView>
+        <SafeAreaView style={styles.viewSize}>
           <HomeScreen />
         </SafeAreaView>
         )
@@ -95,4 +95,7 @@ const styles = StyleSheet.create({
   buttonText: { color: "white", fontWeight: "bold" },
   error: { color: "red", marginBottom: 8 },
   center: { alignItems: "center", gap: 12 },
+  viewSize: {
+    height: '100%'
+  }
 });
