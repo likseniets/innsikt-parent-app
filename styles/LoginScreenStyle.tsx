@@ -17,13 +17,14 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
 
-  title: { fontSize: 22, fontWeight: '700', marginBottom: 6, color: '#e5e7eb' },
+  // darker title for contrast on the light card
+  title: { fontSize: 22, fontWeight: '700', marginBottom: 6, color: '#0b2020' },
 
   input: {
     borderWidth: 1,
     borderColor: '#1f3030',
-    backgroundColor: '#0b2020', // dark field
-    color: '#e5e7eb',           // light text for contrast
+    backgroundColor: '#0b2020',
+    color: '#e5e7eb',
     padding: 12,
     borderRadius: 10,
   },
