@@ -10,7 +10,7 @@ export default function LoginScreen({ onSuccess }: Props) {
   const [error, setError] = useState('');
 
   const handleLogin = () => {
-    if (email === 'test@example.com' && password === '1234') {
+    if (email === 'testexample.com' && password === '1234') {
       setError('');
       onSuccess(); // tell parent we’re logged in
     } else {
