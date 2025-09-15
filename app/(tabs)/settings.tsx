@@ -25,7 +25,9 @@ export default function SettingsScreen() {
       </View>
 
       <View style={s.panel}>
-        <Row title="My account" left={<View style={s.avatar} />} />
+        <Row title="My account" left={<View style={s.iconBubble}>
+          <Ionicons name = "person-circle-outline" size={24} color={"111"} />
+        </View>} />
         <View style={s.divider} />
         <Row
           title="Appearance"
