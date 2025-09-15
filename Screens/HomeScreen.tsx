@@ -6,16 +6,16 @@ import { HomeScreenStyle } from '../styles/HomeScreenStyle';
 
 const HomeScreen = () => {
     const scenario1: scenario = {
-        title: "Fernando",
-        description: "Fernando er en drittunge som ikke hører på noe og bare svarer tilbake stygt"
+        title: "Scenario 1",
+        description: "Scenario 1 description"
     }
     const scenario2: scenario = {
-        title: "John Marcus",
-        description: "John Marcus er en lost cause, som er brain rot level 9000, umulig å snakke normalt med."
+        title: "Scenario 2",
+        description: "Scenario 2 description"
     }
     const scenario3: scenario = {
-        title: "Jesper",
-        description: "Jesper er en nerd"
+        title: "Scenario 3",
+        description: "Scenario 3 description"
     }
     const scenarioer: scenario[] = [scenario1, scenario2, scenario3];
     const [currentScenario, setCurrentScenario] = useState<scenario>();
