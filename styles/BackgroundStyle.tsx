@@ -6,7 +6,7 @@ type ScreenWrapperProps = {
   children: ReactNode;
 };
 
-export default function ScreenWrapper({ children }: ScreenWrapperProps) {
+export default function BackgroundStyle({ children }: ScreenWrapperProps) {
   return (
     <SafeAreaView style={s.safe}>
       <View style={s.screen}>
