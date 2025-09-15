@@ -46,14 +46,12 @@ export default function SettingsScreen() {
         {/* Innhold */}
         <View style={s.content}>
           {/* Header */}
-          <LinearGradient
-            colors={["#e8edf1", "#a9d0ff"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
+          <View
+
             style={s.header}
           >
             <Text style={s.headerTitle}>SETTINGS</Text>
-          </LinearGradient>
+          </View>
 
           {/* Panel */}
           <View style={s.panel}>
@@ -106,6 +104,7 @@ const s = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 16,
+    backgroundColor: "#eef2f5",
   },
   headerTitle: {
     fontSize: 26, // golden ratio fra base 16
