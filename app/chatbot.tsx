@@ -68,7 +68,15 @@ export default function ChatBotScreen() {
         <View style={ChatBotStyle.header}>
           <Button title="Tilbake" onPress={() => router.back()} />
           <Text style={ChatBotStyle.title}>Chatbot</Text>
-          <Button title="Fullfør samtale" onPress={() => {}} />
+          <Button
+            title="Fullfør samtale"
+            onPress={() =>
+              router.push({
+                pathname: '/feedback',
+                params: { title: params?.title ? String(params.title) : 'Scenario' },
+              })
+            }
+          />
         </View>
         {params?.title ? (
           <Text style={ChatBotStyle.subtitle}>{String(params.title)}</Text>
