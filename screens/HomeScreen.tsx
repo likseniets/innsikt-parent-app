@@ -7,19 +7,22 @@ type Props = { onSelectScenario: (s: scenario) => void };
 
 export default function HomeScreen({ onSelectScenario }: Props) {
   const scenario1: scenario = {
-    title: "scenario 1",
-    description: "Dette er det første scenarioet"
+    title: "Scenario 1",
+    description: "Scenario 1 description"
   };
   const scenario2: scenario = {
-    title: "scenario 2",
-    description: "Dette er det andre scenarioet"
+    title: "Scenario 2",
+    description: "Scenario 2 description"
   };
   const scenario3: scenario = {
-    title: "scenario 3",
-    description: "Dette er det tredje scenarioet"
+    title: "Scenario 3",
+    description: "Scenario 3 description"
   };
 
   const scenarioer: scenario[] = [scenario1, scenario2, scenario3];
+
+  // Hvis du trenger å lagre valgt scenario lokalt:
+  // const [currentScenario, setCurrentScenario] = useState<scenario>();
 
   return (
     <View style={HomeScreenStyle.ScenarioView}>
