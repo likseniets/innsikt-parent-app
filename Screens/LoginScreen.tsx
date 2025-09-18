@@ -12,7 +12,7 @@ export default function LoginScreen({ onSuccess }: Props) {
   const handleLogin = () => {
     if (email === 'testexample.com' && password === '1234') {
       setError('');
-      onSuccess(); // tell parent we’re logged in
+      onSuccess(); 
     } else {
       setError('wrong password or email');
     }

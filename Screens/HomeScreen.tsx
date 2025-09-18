@@ -7,16 +7,16 @@ type Props = { onSelectScenario: (s: scenario) => void };
 
 export default function HomeScreen({ onSelectScenario }: Props) {
   const scenario1: scenario = {
-    title: "Fernando",
-    description: "Fernando er en drittunge som ikke hører på noe og bare svarer tilbake stygt"
+    title: "scenario 1",
+    description: "Dette er det første scenarioet"
   };
   const scenario2: scenario = {
-    title: "John Marcus",
-    description: "John Marcus er en lost cause, som er brain rot level 9000, umulig å snakke normalt med."
+    title: "scenario 2",
+    description: "Dette er det andre scenarioet"
   };
   const scenario3: scenario = {
-    title: "Jesper",
-    description: "Jesper er en nerd"
+    title: "scenario 3",
+    description: "Dette er det tredje scenarioet"
   };
 
   const scenarioer: scenario[] = [scenario1, scenario2, scenario3];

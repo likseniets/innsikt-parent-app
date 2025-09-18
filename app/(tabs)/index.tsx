@@ -5,7 +5,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import FeedbackScreen from '../../Screens/FeedbackScreen';
 import HomeScreen from '../../Screens/HomeScreen';
 import LoginScreen from '../../Screens/LoginScreen';
-import type { scenario } from '../../interfaces/types'; // <-- viktig
+import type { scenario } from '../../interfaces/types'; 
 
 export default function Index() {
   const [isLoggedIn, setLoggedIn] = useState(false);
@@ -18,11 +18,11 @@ export default function Index() {
           <LoginScreen onSuccess={() => setLoggedIn(true)} />
         ) : selectedScenario ? (
           <FeedbackScreen
-            title={selectedScenario.title}          // <-- bruk title i feedback
+            title={selectedScenario.title}          
             onBack={() => setSelectedScenario(null)}
           />
         ) : (
-          <HomeScreen onSelectScenario={setSelectedScenario} />  // <-- funker nå
+          <HomeScreen onSelectScenario={setSelectedScenario} />  
         )}
       </SafeAreaView>
     </SafeAreaProvider>
