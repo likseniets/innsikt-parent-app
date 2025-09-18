@@ -1,7 +1,8 @@
 // Scenario‑typen (tittel og beskrivelse) som kommer fra HomeScreen
-import type { scenario as Scenario } from "@/interfaces/types";
+import type { ChatUiMessage, scenario as Scenario } from "@/interfaces/types";
 // Bakgrunnskomponent som gir gradient og SafeArea
 import BackgroundStyle from "@/styles/BackgroundStyle";
+import { ChatBotStyle } from "@/styles/ChatBotStyle";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -9,25 +10,17 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
-  StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-// Enkel meldingstype brukt i chatten
-type ChatMessage = {
-  id: string;
-  role: "system" | "user" | "assistant";
-  content: string;
-};
-
 export default function ChatBotScreen() {
   // Scenario‑tekst satt fra navigasjonsparametre
   const [scenario, setScenario] = useState<string | null>(null);
   // Meldingsliste og inputtekst
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<ChatUiMessage[]>([]);
   const [input, setInput] = useState("");
   // Parametre som sendes fra HomeScreen (tittel/beskrivelse)
   const params = useLocalSearchParams<Partial<Scenario>>();
@@ -67,22 +60,22 @@ export default function ChatBotScreen() {
     <BackgroundStyle>
       {/* Løfter innholdet når tastaturet vises (spesielt iOS) */}
       <KeyboardAvoidingView
-        style={s.container}
+        style={ChatBotStyle.container}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         keyboardVerticalOffset={Platform.OS === "ios" ? insets.bottom : 0}
       >
         {/* Toppfelt med tilbakeknapp og tittel */}
-        <View style={s.header}>
+        <View style={ChatBotStyle.header}>
           <Button title="Tilbake" onPress={() => router.back()} />
-          <Text style={s.title}>Chatbot</Text>
+          <Text style={ChatBotStyle.title}>Chatbot</Text>
           <Button title="Fullfør samtale" onPress={() => {}} />
         </View>
         {params?.title ? (
-          <Text style={s.subtitle}>{String(params.title)}</Text>
+          <Text style={ChatBotStyle.subtitle}>{String(params.title)}</Text>
         ) : null}
 
         {/* Meldingsliste eller tom‑state hvis scenario mangler */}
-        <View style={s.chatContainer}>
+        <View style={ChatBotStyle.chatContainer}>
           {scenario ? (
             <FlatList
               data={messages}
@@ -90,15 +83,15 @@ export default function ChatBotScreen() {
               renderItem={({ item }) => (
                 <View
                   style={[
-                    s.message,
+                    ChatBotStyle.message,
                     item.role === "user"
-                      ? s.userMessage
+                      ? ChatBotStyle.userMessage
                       : item.role === "assistant"
-                      ? s.assistantMessage
-                      : s.systemMessage,
+                      ? ChatBotStyle.assistantMessage
+                      : ChatBotStyle.systemMessage,
                   ]}
                 >
-                  <Text style={s.messageText}>{item.content}</Text>
+                  <Text style={ChatBotStyle.messageText}>{item.content}</Text>
                 </View>
               )}
               contentContainerStyle={{
@@ -107,18 +100,21 @@ export default function ChatBotScreen() {
               }}
             />
           ) : (
-            <View style={s.centered}>
-              <Text style={s.emptyText}>Ingen scenario valgt.</Text>
+            <View style={ChatBotStyle.centered}>
+              <Text style={ChatBotStyle.emptyText}>Ingen scenario valgt.</Text>
             </View>
           )}
         </View>
 
         {/* Tekstfelt + sendknapp */}
         <View
-          style={[s.inputRow, { paddingBottom: Math.max(insets.bottom, 8) }]}
+          style={[
+            ChatBotStyle.inputRow,
+            { paddingBottom: Math.max(insets.bottom, 8) },
+          ]}
         >
           <TextInput
-            style={s.input}
+            style={ChatBotStyle.input}
             value={input}
             onChangeText={setInput}
             placeholder="Skriv en melding..."
@@ -132,45 +128,3 @@ export default function ChatBotScreen() {
     </BackgroundStyle>
   );
 }
-
-const s = StyleSheet.create({
-  container: { flex: 1 },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 8,
-  },
-  title: { color: "#E5E7EB", fontSize: 20, fontWeight: "700" },
-  subtitle: { color: "#9CA3AF", marginBottom: 8 },
-
-  chatContainer: { flex: 1 },
-  message: {
-    padding: 10,
-    borderRadius: 10,
-    marginVertical: 6,
-    maxWidth: "85%",
-  },
-  userMessage: { alignSelf: "flex-end", backgroundColor: "#2563EB" },
-  assistantMessage: { alignSelf: "flex-start", backgroundColor: "#374151" },
-  systemMessage: { alignSelf: "center", backgroundColor: "#111827" },
-  messageText: { color: "#F9FAFB" },
-
-  centered: { flex: 1, alignItems: "center", justifyContent: "center" },
-  emptyText: { color: "#E5E7EB" },
-
-  inputRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  input: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#1f3030",
-    backgroundColor: "#0b2020",
-    color: "#e5e7eb",
-    padding: 12,
-    borderRadius: 10,
-  },
-});

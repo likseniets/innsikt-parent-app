@@ -1,36 +1,4 @@
-/**
- * En enkelt chat‑melding som klienten og API’et utveksler.
- * role: Hvem som «snakker» (system, bruker eller assistent)
- * content: Selve tekstinnholdet
- */
-export type ChatApiMessage = {
-  role: "system" | "user" | "assistant";
-  content: string;
-};
-
-/**
- * Kroppen vi sender til Chat API’et.
- * scenario: Kontekst som beskriver samtalen (tittel + beskrivelse)
- * messages: Historikken så langt (inkl. systemmelding, bruker/assistent)
- * conversationId: Valgfri ID for å fortsette en eksisterende samtale
- */
-export type ChatApiRequest = {
-  scenario: { title: string; description: string };
-  messages: ChatApiMessage[];
-  conversationId?: string;
-};
-
-/**
- * Svaret fra Chat API’et.
- * message: Neste genererte melding fra assistenten
- * conversationId: ID for videre oppfølging i samme samtale
- * error: Eventuell feilmelding fra server
- */
-export type ChatApiResponse = {
-  message: ChatApiMessage;
-  conversationId?: string;
-  error?: string;
-};
+import type { ChatApiMessage, ChatApiRequest, ChatApiResponse } from "@/interfaces/types";
 
 // Basen til API’et og API‑nøkkel hentes fra Expo sine public env‑variabler
 // Disse må settes i utviklingsmiljø/CI for at kall skal fungere.
