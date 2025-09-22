@@ -1,10 +1,10 @@
 import { scenario } from '@/interfaces/types';
-import React from 'react';
-import { Pressable, Text, View } from 'react-native';
-import { HomeScreenStyle } from '../styles/HomeScreenStyle';
 import { router } from 'expo-router';
+import { Pressable, Text, useColorScheme, View } from 'react-native';
+import { HomeScreenStyleDark, HomeScreenStyleLight } from '../styles/HomeScreenStyle';
 
 export default function HomeScreen() {
+  let colorScheme = useColorScheme();
   const scenario1: scenario = {
     title: 'Scenario 1',
     description: 'Scenario 1 description',
@@ -26,6 +26,8 @@ export default function HomeScreen() {
       params: { title: s.title, description: s.description },
     });
   };
+
+   const HomeScreenStyle = colorScheme === 'light' ? HomeScreenStyleLight : HomeScreenStyleDark;
 
   return (
     <View style={HomeScreenStyle.ScenarioView}>

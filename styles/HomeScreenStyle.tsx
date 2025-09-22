@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const HomeScreenStyle = StyleSheet.create({
+export const HomeScreenStyleDark = StyleSheet.create({
     ScenarioView: {
         flex: 1,
         flexDirection: "column",
@@ -21,6 +21,31 @@ export const HomeScreenStyle = StyleSheet.create({
 
     TextColor: {
         color: '#fff',
+        textAlign: 'center'
+    }
+})
+
+export const HomeScreenStyleLight = StyleSheet.create({
+    ScenarioView: {
+        flex: 1,
+        flexDirection: "column",
+        color: "#fff",
+        backgroundColor: "#fff",
+        alignContent: "center",
+    },
+
+    ScenarioCard: {
+        backgroundColor: "#9b9b9bff",
+        flexDirection: 'column',
+        width: '95%',
+        height: 80,
+        margin: 10,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+
+    TextColor: {
+        color: '#000000ff',
         textAlign: 'center'
     }
 })
