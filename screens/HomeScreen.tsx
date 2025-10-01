@@ -1,8 +1,8 @@
 import { scenario } from '@/interfaces/types';
-import React from 'react';
+import { router } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 import { HomeScreenStyle } from '../styles/HomeScreenStyle';
-import { router } from 'expo-router';
+
 
 export default function HomeScreen() {
   const scenario1: scenario = {

@@ -11,9 +11,7 @@ export type ChatApiMessage = {
 
 // Kroppen som sendes til Chat API’et ved forespørsel
 export type ChatApiRequest = {
-  scenario: { title: string; description: string };
   messages: ChatApiMessage[];
-  conversationId?: string;
 };
 
 // Svaret fra Chat API’et
