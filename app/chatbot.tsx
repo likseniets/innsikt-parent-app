@@ -1,5 +1,5 @@
 // Scenario‑typen (tittel og beskrivelse) som kommer fra HomeScreen
-import type { ChatApiMessage, scenario as Scenario } from "@/interfaces/types";
+import type { ChatApiMessage, ChatCompletion, scenario as Scenario } from "@/interfaces/types";
 import { sendChat } from "@/lib/chatApi";
 // Bakgrunnskomponent som gir gradient og SafeArea
 import BackgroundStyle from "@/styles/BackgroundStyle";
@@ -43,9 +43,9 @@ export default function ChatBotScreen() {
 
     const tempMessages: ChatApiMessage[] = [...messages, { role: "user", content: input }];
     try {
-      setMessages([...tempMessages]);
       setInput("");
-      const res = await sendChat(tempMessages)
+      const res: ChatCompletion = await sendChat(tempMessages)
+      setMessages([...tempMessages, { role: "assistant", content: res.choices[0].message.content }]);
       console.log("Final res", res);
     } catch (error) {
       console.log(error);

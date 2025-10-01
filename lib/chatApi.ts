@@ -1,5 +1,4 @@
 import type { ChatApiMessage } from "@/interfaces/types";
-import axios from "axios";
 
 // Basen til API’et og API‑nøkkel hentes fra Expo sine public env‑variabler
 // Disse må settes i utviklingsmiljø/CI for at kall skal fungere.
@@ -11,22 +10,31 @@ import axios from "axios";
 
 
 // Accepts messages: [{ user: string, role: string }]
-const sendChat = (messages: ChatApiMessage[]) => {
+const sendChat = async (messages: ChatApiMessage[]) => {
   // Map to API format: { role, content }
 
   console.log("Trying to send to api:", JSON.stringify({ messages: messages }));
-    const response = axios.post(
-      'https://192.168.1.2:7143/api/Chat',
-      { messages: messages },
-      {
-        headers: {
-          'accept': '*/*',
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    console.log("Api Res", response);
-    return response;
+  try {
+    const response = await fetch('https://192.168.1.2:7143/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ messages }),
+    });
+
+
+     if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("Success:", data);
+    return data;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
 }
 
 export { sendChat };
