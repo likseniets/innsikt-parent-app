@@ -1,5 +1,6 @@
 // Scenario‑typen (tittel og beskrivelse) som kommer fra HomeScreen
-import type { ChatUiMessage, scenario as Scenario } from "@/interfaces/types";
+import type { ChatApiMessage, ChatCompletion, scenario as Scenario } from "@/interfaces/types";
+import { sendChat } from "@/lib/chatApi";
 // Bakgrunnskomponent som gir gradient og SafeArea
 import BackgroundStyle from "@/styles/BackgroundStyle";
 import { ChatBotStyle } from "@/styles/ChatBotStyle";
@@ -20,7 +21,7 @@ export default function ChatBotScreen() {
   // Scenario‑tekst satt fra navigasjonsparametre
   const [scenario, setScenario] = useState<string | null>(null);
   // Meldingsliste og inputtekst
-  const [messages, setMessages] = useState<ChatUiMessage[]>([]);
+  const [messages, setMessages] = useState<ChatApiMessage[]>([]);
   const [input, setInput] = useState("");
   // Parametre som sendes fra HomeScreen (tittel/beskrivelse)
   const params = useLocalSearchParams<Partial<Scenario>>();
@@ -34,26 +35,21 @@ export default function ChatBotScreen() {
         params.description ?? ""
       }`;
       setScenario(incoming);
-      setMessages([
-        {
-          id: "system-0",
-          role: "system",
-          content: incoming.trim(),
-        },
-      ]);
     }
   }, [params, scenario]);
 
   // Legg til brukerens melding i lista (her kan API‑kall kobles på)
-  const handleSend = () => {
-    const trimmed = input.trim();
-    if (!trimmed) return;
-    setMessages((prev) => [
-      ...prev,
-      { id: `user-${Date.now()}`, role: "user", content: trimmed },
-    ]);
-    setInput("");
-    // API kall
+  const handleSend = async () => {
+
+    const tempMessages: ChatApiMessage[] = [...messages, { role: "user", content: input }];
+    try {
+      setInput("");
+      const res: ChatCompletion = await sendChat(tempMessages)
+      setMessages([...tempMessages, { role: "assistant", content: res.choices[0].message.content }]);
+      console.log("Final res", res);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -87,7 +83,6 @@ export default function ChatBotScreen() {
           {scenario ? (
             <FlatList
               data={messages}
-              keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 <View
                   style={[
