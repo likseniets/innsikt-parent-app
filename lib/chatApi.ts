@@ -15,7 +15,7 @@ const sendChat = async (messages: ChatApiMessage[]) => {
 
   console.log("Trying to send to api:", JSON.stringify({ messages: messages }));
   try {
-    const response = await fetch('https://192.168.1.2:7143/api/chat', {
+    const response = await fetch('https://172.20.10.4:7143/api/chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
