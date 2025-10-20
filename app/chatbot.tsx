@@ -67,6 +67,8 @@ export default function ChatBotScreen() {
       { role: "user", content: trimmed },
     ];
 
+    setMessages(tempMessages);
+
     try {
       setInput("");
       // 👇 Viktig: send med sessionId

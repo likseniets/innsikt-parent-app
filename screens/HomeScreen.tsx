@@ -11,7 +11,7 @@ export default function HomeScreen() {
     id: 1,
     title: 'Scenario 1',
     description:
-      'Jesper er en gutt på 9 år. Han liker å spille fotball og dataspill. Han har nylig begynt på en ny skole og idag kranglet han med bestevennen sin. Han føler seg litt ensom og trist. Du er forelderen hans og skal prøve å hjelpe han og finne ut hva som skjedde. Lykke til!',
+      'Jesper er en gutt på 9 år. Han har opplevd noe vanskelig i friminuttet og det er din jobb å finne ut av hva som har skjedd.',
   };
   const scenario2: ScenarioWithId = {
     id: 2,
