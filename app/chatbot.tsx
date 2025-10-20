@@ -1,12 +1,13 @@
-// Scenario‑typen (tittel og beskrivelse) som kommer fra HomeScreen
-import type { ChatApiMessage, ChatCompletion, scenario as Scenario } from "@/interfaces/types";
+// Scenario-typen (tittel og beskrivelse) som kommer fra HomeScreen
+import type { ChatApiMessage, ChatCompletion } from "@/interfaces/types";
 import { sendChat } from "@/lib/chatApi";
 // Bakgrunnskomponent som gir gradient og SafeArea
 import BackgroundStyle from "@/styles/BackgroundStyle";
 import { ChatBotStyle } from "@/styles/ChatBotStyle";
 import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
+  Alert,
   Button,
   FlatList,
   KeyboardAvoidingView,
@@ -17,50 +18,88 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+// Genererer en unik sessionId hver gang skjermen åpnes
+function newSessionId() {
+  return (typeof crypto !== "undefined" && "randomUUID" in crypto)
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
 export default function ChatBotScreen() {
-  // Scenario‑tekst satt fra navigasjonsparametre
+  // Scenario-tekst (kun for visning i UI)
   const [scenario, setScenario] = useState<string | null>(null);
-  // Meldingsliste og inputtekst
+  // Meldingsliste og input
   const [messages, setMessages] = useState<ChatApiMessage[]>([]);
   const [input, setInput] = useState("");
-  // Parametre som sendes fra HomeScreen (tittel/beskrivelse)
-  const params = useLocalSearchParams<Partial<Scenario>>();
-  // Sikker topp/bunn‑innrykk for tastaturhåndtering
+
+  // Parametre fra HomeScreen
+  const { scenarioId, title, description } = useLocalSearchParams<{
+    scenarioId?: string;
+    title?: string;
+    description?: string;
+  }>();
+
+  // 🔑 Én sessionId per gang skjermen åpnes
+  const sessionId = useMemo(() => newSessionId(), []);
+
   const insets = useSafeAreaInsets();
 
-  // Når vi får inn scenarioparametre, legg til som system‑melding øverst
+  // Vis tittel/beskrivelse i UI (ikke sendes til API)
   useEffect(() => {
-    if ((params?.title || params?.description) && !scenario) {
-      const incoming = `\n${params.title ?? "Scenario"}\n\n${
-        params.description ?? ""
-      }`;
+    if ((title || description) && !scenario) {
+      const incoming = `\n${title ?? "Scenario"}\n\n${description ?? ""}`;
       setScenario(incoming);
     }
-  }, [params, scenario]);
+  }, [title, description, scenario]);
 
-  // Legg til brukerens melding i lista (her kan API‑kall kobles på)
+  // Send melding til backend – serveren injiserer AiPrompt vha. scenarioId
   const handleSend = async () => {
+    const trimmed = input.trim();
+    if (!trimmed) return;
 
-    const tempMessages: ChatApiMessage[] = [...messages, { role: "user", content: input }];
+    if (!scenarioId) {
+      Alert.alert("Mangler scenario", "Fant ikke scenarioId i navigasjonen.");
+      return;
+    }
+
+    const tempMessages: ChatApiMessage[] = [
+      ...messages,
+      { role: "user", content: trimmed },
+    ];
+
+    setMessages(tempMessages);
+
     try {
       setInput("");
-      const res: ChatCompletion = await sendChat(tempMessages)
-      setMessages([...tempMessages, { role: "assistant", content: res.choices[0].message.content }]);
+      // 👇 Viktig: send med sessionId
+      const res: ChatCompletion = await sendChat(
+        Number(scenarioId),
+        sessionId,
+        tempMessages
+      );
+
+      // OpenAI-format støttes: plukk ut svaret robust
+      const assistantText =
+        (res as any)?.choices?.[0]?.message?.content ??
+        (res as any)?.content ??
+        "(tomt svar)";
+
+      setMessages([...tempMessages, { role: "assistant", content: assistantText }]);
       console.log("Final res", res);
     } catch (error) {
       console.log(error);
+      Alert.alert("Feil", "Klarte ikke å hente svar fra AI-tjenesten.");
     }
   };
 
   return (
     <BackgroundStyle>
-      {/* Løfter innholdet når tastaturet vises (spesielt iOS) */}
       <KeyboardAvoidingView
         style={ChatBotStyle.container}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         keyboardVerticalOffset={Platform.OS === "ios" ? insets.bottom : 0}
       >
-        {/* Toppfelt med tilbakeknapp og tittel */}
+        {/* Header */}
         <View style={ChatBotStyle.header}>
           <Button title="Tilbake" onPress={() => router.back()} />
           <Text style={ChatBotStyle.title}>Chatbot</Text>
@@ -68,21 +107,21 @@ export default function ChatBotScreen() {
             title="Fullfør samtale"
             onPress={() =>
               router.push({
-                pathname: '/feedback',
-                params: { title: params?.title ? String(params.title) : 'Scenario' },
+                pathname: "/feedback",
+                params: { title: title ? String(title) : "Scenario" },
               })
             }
           />
         </View>
-        {params?.title ? (
-          <Text style={ChatBotStyle.subtitle}>{String(params.title)}</Text>
-        ) : null}
 
-        {/* Meldingsliste eller tom‑state hvis scenario mangler */}
+        {title ? <Text style={ChatBotStyle.subtitle}>{String(title)}</Text> : null}
+
+        {/* Meldingsliste */}
         <View style={ChatBotStyle.chatContainer}>
           {scenario ? (
             <FlatList
               data={messages}
+              keyExtractor={(_, idx) => String(idx)}
               renderItem={({ item }) => (
                 <View
                   style={[
@@ -109,7 +148,7 @@ export default function ChatBotScreen() {
           )}
         </View>
 
-        {/* Tekstfelt + sendknapp */}
+        {/* Input + send */}
         <View
           style={[
             ChatBotStyle.inputRow,

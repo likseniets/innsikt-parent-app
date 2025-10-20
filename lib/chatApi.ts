@@ -1,41 +1,41 @@
 import type { ChatApiMessage } from "@/interfaces/types";
-
-// Basen til API’et og API‑nøkkel hentes fra Expo sine public env‑variabler
-// Disse må settes i utviklingsmiljø/CI for at kall skal fungere.
+import { Platform } from "react-native";
 
 /**
- * Kaller Chat API’et med scenario + meldingshistorikk og returnerer assistentens svar.
- * Kaster Error ved nettverksfeil/ugyldig svar for enkel håndtering i UI.
+ * BASE_URL for HTTPS 7143:
+ * - Expo Web / iOS Simulator på samme maskin: https://localhost:7143
+ * - Android Emulator: https://10.0.2.2:7143  (⚠️ emulatoren stoler normalt IKKE på dev-sertifikat)
+ *   -> test helst i web/iOS-simulator når du bruker HTTPS dev-sertifikat.
  */
+const isAndroid = Platform.OS === "android";
+const isWeb = Platform.OS === "web";
 
+export const BASE_URL = isWeb
+  ? "https://localhost:7143"
+  : isAndroid
+  ? "https://10.0.2.2:7143"
+  : "https://localhost:7143";
 
-// Accepts messages: [{ user: string, role: string }]
-const sendChat = async (messages: ChatApiMessage[]) => {
-  // Map to API format: { role, content }
+export async function sendChat(
+  scenarioId: number,
+  sessionId: string,
+  messages: ChatApiMessage[]
+) {
+  const payload = { scenarioId, sessionId, messages };
+  console.log("BASE_URL =", BASE_URL, "POST", `${BASE_URL}/api/chat`);
+  console.log("Trying to send to api:", JSON.stringify(payload));
 
-  console.log("Trying to send to api:", JSON.stringify({ messages: messages }));
-  try {
-    const response = await fetch('https://172.20.10.4:7143/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ messages }),
-    });
+  console.log("REQUEST URL =", `${BASE_URL}/api/chat`);
+  const response = await fetch(`${BASE_URL}/api/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
 
-
-     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log("Success:", data);
-    return data;
-  } catch (error) {
-    console.error("Error:", error);
-    throw error;
+  if (!response.ok) {
+    const txt = await response.text().catch(() => "");
+    throw new Error(`HTTP ${response.status}: ${txt}`);
   }
+
+  return (await response.json()) as any;
 }
-
-export { sendChat };
-
