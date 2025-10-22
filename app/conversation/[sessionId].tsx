@@ -2,18 +2,31 @@
 import BackgroundStyle from "@/styles/BackgroundStyle";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Alert, FlatList, Platform, Pressable, RefreshControl, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  Platform,
+  Pressable,
+  RefreshControl,
+  Text,
+  View,
+} from "react-native";
 
 const isAndroid = Platform.OS === "android";
 const isWeb = Platform.OS === "web";
 
 const BASE_URL = isWeb
-  ? "https://localhost:7143"
+  ? "http://localhost:5202"
   : isAndroid
-  ? "https://10.0.2.2:7143"
-  : "https://localhost:7143";
+  ? "http://10.0.2.2:5202"
+  : "http://localhost:5202";
 
-type MessageDto = { role: "user" | "assistant"; content: string; createdAt: string };
+type MessageDto = {
+  role: "user" | "assistant";
+  content: string;
+  createdAt: string;
+};
 type ConversationDetail = {
   sessionId: string;
   scenarioId: number;
@@ -35,7 +48,9 @@ export default function ConversationDetailScreen() {
     if (!sessionId) return;
     try {
       setLoading(true);
-      const res = await fetch(`${BASE_URL}/api/conversations/${encodeURIComponent(sessionId)}`);
+      const res = await fetch(
+        `${BASE_URL}/api/conversations/${encodeURIComponent(sessionId)}`
+      );
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = (await res.json()) as ConversationDetail;
       setConv(data);
@@ -60,24 +75,33 @@ export default function ConversationDetailScreen() {
 
   const onDelete = useCallback(async () => {
     if (!sessionId) return;
-    Alert.alert("Slett samtale", "Er du sikker på at du vil slette denne samtalen?", [
-      { text: "Avbryt", style: "cancel" },
-      {
-        text: "Slett",
-        style: "destructive",
-        onPress: async () => {
-          try {
-            const res = await fetch(`${BASE_URL}/api/conversations/${encodeURIComponent(sessionId)}`, {
-              method: "DELETE",
-            });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            router.back();
-          } catch (e) {
-            Alert.alert("Feil", "Klarte ikke å slette samtalen.");
-          }
+    Alert.alert(
+      "Slett samtale",
+      "Er du sikker på at du vil slette denne samtalen?",
+      [
+        { text: "Avbryt", style: "cancel" },
+        {
+          text: "Slett",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const res = await fetch(
+                `${BASE_URL}/api/conversations/${encodeURIComponent(
+                  sessionId
+                )}`,
+                {
+                  method: "DELETE",
+                }
+              );
+              if (!res.ok) throw new Error(`HTTP ${res.status}`);
+              router.back();
+            } catch (e) {
+              Alert.alert("Feil", "Klarte ikke å slette samtalen.");
+            }
+          },
         },
-      },
-    ]);
+      ]
+    );
   }, [sessionId]);
 
   const header = (
@@ -86,16 +110,23 @@ export default function ConversationDetailScreen() {
         {conv?.title ?? "Samtale"}
       </Text>
       {conv?.scenarioTitle ? (
-        <Text style={{ color: "#9CA3AF" }}>
-          Scenario: {conv.scenarioTitle}
-        </Text>
+        <Text style={{ color: "#9CA3AF" }}>Scenario: {conv.scenarioTitle}</Text>
       ) : null}
       <Text style={{ color: "#9CA3AF" }}>
         Lagret: {conv ? new Date(conv.savedAt).toLocaleString() : ""}
       </Text>
 
       {conv?.scenarioDescription ? (
-        <View style={{ backgroundColor: "#0B1220", borderColor: "#1f2937", borderWidth: 1, borderRadius: 10, padding: 10, marginTop: 8 }}>
+        <View
+          style={{
+            backgroundColor: "#0B1220",
+            borderColor: "#1f2937",
+            borderWidth: 1,
+            borderRadius: 10,
+            padding: 10,
+            marginTop: 8,
+          }}
+        >
           <Text style={{ color: "#9CA3AF" }}>{conv.scenarioDescription}</Text>
         </View>
       ) : null}
@@ -105,14 +136,42 @@ export default function ConversationDetailScreen() {
   return (
     <BackgroundStyle>
       <View style={{ paddingTop: 54, paddingHorizontal: 16, gap: 12, flex: 1 }}>
-        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-          <Pressable onPress={() => router.back()} style={{ paddingVertical: 6, paddingHorizontal: 10, borderRadius: 8, backgroundColor: "#111827", borderWidth: 1, borderColor: "#1f2937" }}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Pressable
+            onPress={() => router.back()}
+            style={{
+              paddingVertical: 6,
+              paddingHorizontal: 10,
+              borderRadius: 8,
+              backgroundColor: "#111827",
+              borderWidth: 1,
+              borderColor: "#1f2937",
+            }}
+          >
             <Text style={{ color: "white" }}>Tilbake</Text>
           </Pressable>
 
-          <Text style={{ color: "white", fontWeight: "700", fontSize: 18 }}>Samtale</Text>
+          <Text style={{ color: "white", fontWeight: "700", fontSize: 18 }}>
+            Samtale
+          </Text>
 
-          <Pressable onPress={onDelete} style={{ paddingVertical: 6, paddingHorizontal: 10, borderRadius: 8, backgroundColor: "#111827", borderWidth: 1, borderColor: "#1f2937" }}>
+          <Pressable
+            onPress={onDelete}
+            style={{
+              paddingVertical: 6,
+              paddingHorizontal: 10,
+              borderRadius: 8,
+              backgroundColor: "#111827",
+              borderWidth: 1,
+              borderColor: "#1f2937",
+            }}
+          >
             <Text style={{ color: "#EF4444" }}>Slett</Text>
           </Pressable>
         </View>
@@ -126,7 +185,9 @@ export default function ConversationDetailScreen() {
             data={conv.messages}
             keyExtractor={(_, i) => String(i)}
             ListHeaderComponent={header}
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
             renderItem={({ item }) => (
               <View
                 style={{

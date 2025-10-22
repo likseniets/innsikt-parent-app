@@ -11,7 +11,7 @@ import {
 } from "react-native";
 
 // ✅ enkel lokal base-url (endre hvis du bruker annen port / http)
-const API = "https://localhost:7143";
+const API = "http://localhost:5202";
 
 type HistoryItem = {
   sessionId: string;
@@ -62,7 +62,11 @@ export default function HistoryScreen() {
       "Er du sikker på at du vil slette denne samtalen? Dette kan ikke angres.",
       [
         { text: "Avbryt", style: "cancel" },
-        { text: "Slett", style: "destructive", onPress: () => deleteConversation(sessionId) },
+        {
+          text: "Slett",
+          style: "destructive",
+          onPress: () => deleteConversation(sessionId),
+        },
       ]
     );
   };
@@ -98,7 +102,9 @@ export default function HistoryScreen() {
     <View style={{ flex: 1, padding: 16 }}>
       {items.length === 0 ? (
         <View style={{ alignItems: "center", marginTop: 24 }}>
-          <Text style={{ color: "#cbd5e1", fontSize: 16 }}>Ingen historikk enda.</Text>
+          <Text style={{ color: "#cbd5e1", fontSize: 16 }}>
+            Ingen historikk enda.
+          </Text>
           <Text style={{ color: "#94a3b8", fontSize: 14, marginTop: 6 }}>
             Når du chatter, dukker samtalene opp her.
           </Text>
@@ -107,7 +113,9 @@ export default function HistoryScreen() {
         <FlatList
           data={items}
           keyExtractor={(x) => x.sessionId}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
           contentContainerStyle={{ gap: 12, paddingBottom: 24 }}
           renderItem={({ item }) => (
             <View
@@ -135,23 +143,43 @@ export default function HistoryScreen() {
                 {item.scenarioDescription ? (
                   <Text
                     numberOfLines={3}
-                    style={{ color: "#e5e7eb", marginTop: 8, textAlign: "center", lineHeight: 20 }}
+                    style={{
+                      color: "#e5e7eb",
+                      marginTop: 8,
+                      textAlign: "center",
+                      lineHeight: 20,
+                    }}
                   >
                     {item.scenarioDescription}
                   </Text>
                 ) : item.lastMessagePreview ? (
-                  <Text numberOfLines={2} style={{ color: "#cbd5e1", marginTop: 8, textAlign: "center" }}>
+                  <Text
+                    numberOfLines={2}
+                    style={{
+                      color: "#cbd5e1",
+                      marginTop: 8,
+                      textAlign: "center",
+                    }}
+                  >
                     {item.lastMessagePreview}
                   </Text>
                 ) : null}
               </Pressable>
 
-              <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 12 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginTop: 12,
+                }}
+              >
                 <Text style={{ color: "#9ca3af", fontSize: 12 }}>
                   {new Date(item.savedAt).toLocaleString()}
                 </Text>
                 <Pressable onPress={() => confirmDelete(item.sessionId)}>
-                  <Text style={{ color: "#f87171", fontWeight: "600" }}>Slett</Text>
+                  <Text style={{ color: "#f87171", fontWeight: "600" }}>
+                    Slett
+                  </Text>
                 </Pressable>
               </View>
             </View>

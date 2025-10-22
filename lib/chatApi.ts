@@ -11,10 +11,10 @@ const isAndroid = Platform.OS === "android";
 const isWeb = Platform.OS === "web";
 
 export const BASE_URL = isWeb
-  ? "https://localhost:7143"
+  ? "http://localhost:5202"
   : isAndroid
-  ? "https://10.0.2.2:7143"
-  : "https://localhost:7143";
+  ? "http://10.0.2.2:5202"
+  : "http://localhost:5202";
 
 export async function sendChat(
   scenarioId: number,
