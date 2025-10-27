@@ -1,17 +1,21 @@
 import { router } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
+
 import {
   ActivityIndicator,
   Alert,
   FlatList,
+  Platform,
   Pressable,
   RefreshControl,
   Text,
   View,
 } from "react-native";
 
-// ✅ enkel lokal base-url (endre hvis du bruker annen port / http)
+// enkel lokal base-url (endre hvis du bruker annen port / http)
 const API = "http://localhost:5202";
+
+const isWeb = Platform.OS === "web";
 
 type HistoryItem = {
   sessionId: string;
@@ -57,6 +61,18 @@ export default function HistoryScreen() {
   };
 
   const confirmDelete = (sessionId: string) => {
+    if (isWeb) {
+      // RN Alert med knapper støttes ikke i web → bruk browser-confirm
+      const ok = window.confirm(
+        "Er du sikker på at du vil slette denne samtalen? Dette kan ikke angres."
+      );
+      if (ok) {
+        deleteConversation(sessionId);
+      }
+      return;
+    }
+
+    // Native (iOS/Android): bruk Alert med knapper
     Alert.alert(
       "Slett samtale",
       "Er du sikker på at du vil slette denne samtalen? Dette kan ikke angres.",
@@ -73,8 +89,10 @@ export default function HistoryScreen() {
 
   const deleteConversation = async (sessionId: string) => {
     const url = `${API}/api/conversations/${encodeURIComponent(sessionId)}`;
+
+    // Optimistisk oppdatering: fjern elementet lokalt med én gang
     const prev = items;
-    setItems((xs) => xs.filter((x) => x.sessionId !== sessionId)); // optimistisk
+    setItems((xs) => xs.filter((x) => x.sessionId !== sessionId));
 
     try {
       const res = await fetch(url, { method: "DELETE" });
@@ -82,11 +100,17 @@ export default function HistoryScreen() {
         const text = await res.text().catch(() => "");
         throw new Error(`HTTP ${res.status} ${text}`);
       }
-      fetchData(); // refresh fra server
+      // Valgfritt: hent på nytt for å være i sync med server
+      fetchData();
     } catch (err) {
       console.error("Delete error:", err);
-      Alert.alert("Feil", "Klarte ikke slette samtalen.");
-      setItems(prev); // rull tilbake ved feil
+      if (isWeb) {
+        window.alert("Feil: Klarte ikke slette samtalen.");
+      } else {
+        Alert.alert("Feil", "Klarte ikke slette samtalen.");
+      }
+      // Rull tilbake liste om noe feilet
+      setItems(prev);
     }
   };
 
