@@ -4,6 +4,7 @@ import { sendChat } from "@/lib/chatApi";
 // Bakgrunnskomponent som gir gradient og SafeArea
 import BackgroundStyle from "@/styles/BackgroundStyle";
 import { ChatBotStyle } from "@/styles/ChatBotStyle";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -62,17 +63,29 @@ export default function ChatBotScreen() {
       return;
     }
 
+    const retrieveData = async (key: string) => {
+      try {
+        const jsonValue = await AsyncStorage.getItem(key);
+        return jsonValue != null ? JSON.parse(jsonValue) : null; // Parse back to object/array
+      } catch (error) {
+        console.error('Error retrieving data:', error);
+        return null;
+      }
+    };
+
     const tempMessages: ChatApiMessage[] = [
       ...messages,
       { role: "user", content: trimmed },
     ];
 
     setMessages(tempMessages);
+    const userData = await retrieveData('user');
 
     try {
       setInput("");
       // 👇 Viktig: send med sessionId
       const res: ChatCompletion = await sendChat(
+        userData.id,
         Number(scenarioId),
         sessionId,
         tempMessages

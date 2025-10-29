@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -11,7 +12,7 @@ import {
 } from "react-native";
 
 // ✅ enkel lokal base-url (endre hvis du bruker annen port / http)
-const API = "http://localhost:5202";
+const API = "https://localhost:7143";
 
 type HistoryItem = {
   sessionId: string;
@@ -29,8 +30,18 @@ export default function HistoryScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchData = useCallback(async () => {
+    const retrieveData = async (key: string) => {
+      try {
+        const jsonValue = await AsyncStorage.getItem(key);
+        return jsonValue != null ? JSON.parse(jsonValue) : null; // Parse back to object/array
+      } catch (error) {
+        console.error('Error retrieving data:', error);
+        return null;
+      }
+    };
+    const userData = await retrieveData('user');
     try {
-      const res = await fetch(`${API}/api/conversations?page=1&pageSize=50`);
+      const res = await fetch(`${API}/api/conversations/by-email?email=${userData?.email}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data: HistoryItem[] = await res.json();
       setItems(data);

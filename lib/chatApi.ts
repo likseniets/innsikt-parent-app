@@ -11,17 +11,18 @@ const isAndroid = Platform.OS === "android";
 const isWeb = Platform.OS === "web";
 
 export const BASE_URL = isWeb
-  ? "http://localhost:5202"
+  ? "https://localhost:7143"
   : isAndroid
-  ? "http://10.0.2.2:5202"
-  : "http://localhost:5202";
+  ? "http://10.0.2.2:7143"
+  : "http://localhost:7143";
 
 export async function sendChat(
+  userId: number,
   scenarioId: number,
   sessionId: string,
   messages: ChatApiMessage[]
 ) {
-  const payload = { scenarioId, sessionId, messages };
+  const payload = {userId, scenarioId, sessionId, messages };
   console.log("BASE_URL =", BASE_URL, "POST", `${BASE_URL}/api/chat`);
   console.log("Trying to send to api:", JSON.stringify(payload));
 
@@ -37,5 +38,48 @@ export async function sendChat(
     throw new Error(`HTTP ${response.status}: ${txt}`);
   }
 
+  return (await response.json()) as any;
+}
+
+export async function authenticateUser(email: string, password: string) {
+  const payload = { email, password };
+  console.log("Authenticating user:", email);
+
+  const response = await fetch(`${BASE_URL}/api/users/authorize`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const txt = await response.text().catch(() => "");
+    throw new Error(`HTTP ${response.status}: ${txt}`);
+  }
+
+  return (await response.json()) as any;
+}
+
+export async function getScenarios() {
+  console.log("Fetching scenarios from API");
+  const response = await fetch(`${BASE_URL}/api/Scenarios`, { method: "GET" });
+
+  if (!response.ok) {
+    const txt = await response.text().catch(() => "");
+    throw new Error(`HTTP ${response.status}: ${txt}`);
+  }
+  return (await response.json()) as any;
+}
+
+export async function getScenarioById(scenarioId: number) {
+  console.log("Fetching scenario by ID from API:", scenarioId);
+  const response = await fetch(
+    `${BASE_URL}/api/Scenarios/${scenarioId}`,
+    { method: "GET" }
+  );
+
+  if (!response.ok) {
+    const txt = await response.text().catch(() => "");
+    throw new Error(`HTTP ${response.status}: ${txt}`);
+  }
   return (await response.json()) as any;
 }

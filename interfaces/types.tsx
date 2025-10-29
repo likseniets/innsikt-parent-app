@@ -1,4 +1,5 @@
 export interface scenario {
+  id: number;
   title: string;
   description: string;
 }

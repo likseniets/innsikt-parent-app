@@ -1,36 +1,31 @@
 import { scenario } from '@/interfaces/types';
+import { getScenarios } from '@/lib/chatApi';
 import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { HomeScreenStyle } from '../styles/HomeScreenStyle';
 
-// Liten lokal utvidelse med id for navigasjon
-type ScenarioWithId = scenario & { id: number };
-
 export default function HomeScreen() {
-  const scenario1: ScenarioWithId = {
-    id: 1,
-    title: 'Scenario 1',
-    description:
-      'Jesper er en gutt på 9 år. Han har opplevd noe vanskelig i friminuttet og det er din jobb å finne ut av hva som har skjedd.',
-  };
-  const scenario2: ScenarioWithId = {
-    id: 2,
-    title: 'Scenario 2',
-    description: 'Scenario 2 description',
-  };
-  const scenario3: ScenarioWithId = {
-    id: 3,
-    title: 'Scenario 3',
-    description: 'Scenario 3 description',
-  };
+  const [scenarios, setScenarios] = useState<scenario[]>([]);
 
-  const scenarioer: ScenarioWithId[] = [scenario1, scenario2, scenario3];
+  useEffect(() => {
+    const fetchScenarios = async () => {
+      try {
+        const scenarios = await getScenarios();
+        setScenarios(scenarios);
+        console.log('Fetched scenarios:', scenarios);
+      } catch (error) {
+        console.error('Error fetching scenarios:', error);
+      }
+    };
+    fetchScenarios();
+  }, []);
 
-  const goToChatbot = (s: ScenarioWithId) => {
+  const goToChatbot = (s: scenario) => {
     router.push({
       pathname: '/chatbot',
       params: {
-        scenarioId: String(s.id),   // 👈 viktig for backend
+        scenarioId: String(s.id),
         title: s.title,
         description: s.description,
       },
@@ -39,7 +34,7 @@ export default function HomeScreen() {
 
   return (
     <View style={HomeScreenStyle.ScenarioView}>
-      {scenarioer.map((s) => (
+      {scenarios.map((s) => (
         <Pressable
           key={s.id}
           style={HomeScreenStyle.ScenarioCard}
