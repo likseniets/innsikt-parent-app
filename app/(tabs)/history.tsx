@@ -12,7 +12,7 @@ import {
 } from "react-native";
 
 // ✅ enkel lokal base-url (endre hvis du bruker annen port / http)
-const API = "https://localhost:7143";
+const API = "https://innsikt-backend.fly.dev";
 
 type HistoryItem = {
   sessionId: string;

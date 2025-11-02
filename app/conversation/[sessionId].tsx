@@ -6,21 +6,13 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
-  Platform,
   Pressable,
   RefreshControl,
   Text,
-  View,
+  View
 } from "react-native";
 
-const isAndroid = Platform.OS === "android";
-const isWeb = Platform.OS === "web";
-
-const BASE_URL = isWeb
-  ? "http://localhost:5202"
-  : isAndroid
-  ? "http://10.0.2.2:5202"
-  : "http://localhost:5202";
+const BASE_URL = "https://innsikt-backend.fly.dev";
 
 type MessageDto = {
   role: "user" | "assistant";

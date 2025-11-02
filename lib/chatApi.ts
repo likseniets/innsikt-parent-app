@@ -10,12 +10,7 @@ import { Platform } from "react-native";
 const isAndroid = Platform.OS === "android";
 const isWeb = Platform.OS === "web";
 
-export const BASE_URL = isWeb
-  ? "https://localhost:7143"
-  : isAndroid
-  ? "http://10.0.2.2:7143"
-  : "http://localhost:7143";
-
+export const BASE_URL = "https://innsikt-backend.fly.dev"
 export async function sendChat(
   userId: number,
   scenarioId: number,
