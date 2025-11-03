@@ -22,8 +22,11 @@ RUN npm install
 # Copy the rest of the app
 COPY . .
 
-# Build Expo web version
-RUN npx expo export:web
+# Set environment for web platform
+ENV EXPO_USE_STATIC=web
+
+# Build Expo for web using Metro
+RUN npx expo export -p web
 
 # ----- Runtime stage -----
 FROM nginx:alpine AS runtime
