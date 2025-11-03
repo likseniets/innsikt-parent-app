@@ -10,8 +10,11 @@ import {
   Pressable,
   RefreshControl,
   Text,
+  Platform,
   View
 } from "react-native";
+
+const isWeb = Platform.os = "web";
 
 const BASE_URL = "https://innsikt-backend.fly.dev";
 
