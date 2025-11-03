@@ -1,4 +1,5 @@
 // app/conversation/[sessionId].tsx
+import { deleteConversationBySession } from "@/lib/chatApi";
 import BackgroundStyle from "@/styles/BackgroundStyle";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
@@ -66,7 +67,25 @@ export default function ConversationDetailScreen() {
   }, [fetchConversation]);
 
   const onDelete = useCallback(async () => {
-    if (!sessionId) return;
+    const id = sessionId ?? "";
+    if (!id) return;
+
+    // Web: bruk window.confirm (Alert med knapper støttes ikke i RN Web)
+    if (isWeb) {
+      const ok = window.confirm(
+        "Er du sikker på at du vil slette denne samtalen?"
+      );
+      if (!ok) return;
+      try {
+        await deleteConversationBySession(String(id)); // ikke encode, API-funksjonen bygger URL
+        router.replace("/(tabs)/history"); // sikrere enn back()
+      } catch (e) {
+        window.alert("Feil: Klarte ikke å slette samtalen.");
+      }
+      return;
+    }
+
+    // Native (iOS/Android): vanlig Alert med knapper
     Alert.alert(
       "Slett samtale",
       "Er du sikker på at du vil slette denne samtalen?",
@@ -77,16 +96,8 @@ export default function ConversationDetailScreen() {
           style: "destructive",
           onPress: async () => {
             try {
-              const res = await fetch(
-                `${BASE_URL}/api/conversations/${encodeURIComponent(
-                  sessionId
-                )}`,
-                {
-                  method: "DELETE",
-                }
-              );
-              if (!res.ok) throw new Error(`HTTP ${res.status}`);
-              router.back();
+              await deleteConversationBySession(String(id));
+              router.replace("/(tabs)/history");
             } catch (e) {
               Alert.alert("Feil", "Klarte ikke å slette samtalen.");
             }

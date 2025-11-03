@@ -35,6 +35,15 @@ export async function sendChat(
 
   return (await response.json()) as any;
 }
+export async function deleteConversationBySession(sessionId: string) {
+  const res = await fetch(`${BASE_URL}/api/conversations/${sessionId}`, {
+    method: 'DELETE',
+  });
+  if (!(res.ok || res.status === 204)) {
+    const txt = await res.text().catch(() => '');
+    throw new Error(`Delete failed (${res.status}): ${txt}`);
+  }
+}
 
 export async function authenticateUser(email: string, password: string) {
   const payload = { email, password };
