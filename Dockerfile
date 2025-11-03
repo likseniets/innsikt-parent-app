@@ -34,14 +34,11 @@ FROM nginx:alpine AS runtime
 # Copy built static files to nginx
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Create nginx config for SPA routing
-RUN echo 'server { \n\
-    listen 8080; \n\
-    location / { \n\
-        root /usr/share/nginx/html; \n\
-        try_files $uri $uri/ /index.html; \n\
-    } \n\
-}' > /etc/nginx/conf.d/default.conf
+# Remove default nginx config
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Copy custom nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 8080
 
