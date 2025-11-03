@@ -1,15 +1,13 @@
 # syntax=docker/dockerfile:1
 
-# Use Node 20 slim base
 ARG NODE_VERSION=20.18.0
 FROM node:${NODE_VERSION}-slim AS build
 
 LABEL fly_launch_runtime="Node.js"
 
-# Set working directory
 WORKDIR /app
 
-# Install system dependencies (for native modules)
+# Install system dependencies
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
     build-essential node-gyp pkg-config python-is-python3 && \
@@ -18,29 +16,30 @@ RUN apt-get update -qq && \
 # Copy dependency files
 COPY package*.json ./
 
-# Install ALL dependencies (including devDependencies)
+# Install ALL dependencies (including devDependencies for build)
 RUN npm install
 
 # Copy the rest of the app
 COPY . .
 
-# (Optional) build Expo web version if you want static hosting
-# RUN npx expo export:web
+# Build Expo web version
+RUN npx expo export:web
 
 # ----- Runtime stage -----
-FROM node:${NODE_VERSION}-slim AS runtime
+FROM nginx:alpine AS runtime
 
-WORKDIR /app
+# Copy built static files to nginx
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy built app from previous stage
-COPY --from=build /app /app
+# Create nginx config for SPA routing
+RUN echo 'server { \n\
+    listen 8080; \n\
+    location / { \n\
+        root /usr/share/nginx/html; \n\
+        try_files $uri $uri/ /index.html; \n\
+    } \n\
+}' > /etc/nginx/conf.d/default.conf
 
-# Now set production environment
-ENV NODE_ENV=production
-ENV PORT=8080
-
-# Expose Fly.io port
 EXPOSE 8080
 
-# Start your Expo app
-CMD ["npm", "run", "start"]
+CMD ["nginx", "-g", "daemon off;"]
