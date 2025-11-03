@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
+import { authenticateUser } from '../lib/chatApi';
 import styles from '../styles/LoginScreenStyle';
 
 type Props = { onSuccess: () => void };
@@ -9,12 +11,18 @@ export default function LoginScreen({ onSuccess }: Props) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = () => {
-    if (email === 'testexample.com' && password === '1234') {
-      setError('');
-      onSuccess(); 
-    } else {
-      setError('wrong password or email');
+
+  const handleLogin = async () => {
+    try {
+      const user = await authenticateUser(email, password);
+      console.log('User authenticated:', user);
+      const jsonValue = typeof user === 'object' ? JSON.stringify(user) : user;
+      await AsyncStorage.setItem('user', jsonValue);
+      console.log('Data stored successfully!');
+      onSuccess();
+    } catch (err) {
+      console.error('Login failed:', err);
+      setError('Login failed. Please check your credentials and try again.');
     }
   };
 
