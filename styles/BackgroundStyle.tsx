@@ -1,5 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 
 type ScreenWrapperProps = {
@@ -10,7 +10,6 @@ export default function BackgroundStyle({ children }: ScreenWrapperProps) {
   return (
     <SafeAreaView style={s.safe}>
       <View style={s.screen}>
-    
         <LinearGradient
           colors={["rgba(120,180,255,0.35)", "rgba(255,255,255,0)"]}
           start={{ x: 0.1, y: 0 }}

@@ -45,10 +45,29 @@ export default function HistoryScreen() {
     };
     const userData = await retrieveData("user");
     try {
-      const res = await fetch(
-        `${API}/api/conversations/by-email?email=${userData?.email}`
-      );
+      // Velg endpoint avhengig av om email faktisk er en e-post
+      const hasEmail =
+        typeof userData?.email === "string" && userData.email.includes("@");
+      const url = hasEmail
+        ? `${API}/api/conversations/by-email?email=${encodeURIComponent(
+            userData.email
+          )}`
+        : `${API}/api/conversations`;
+
+      // Hvis du har user.id, send den i header (ConversationsController støtter X-User-Id)
+      const headers: Record<string, string> = {};
+      if (userData?.id != null) headers["X-User-Id"] = String(userData.id);
+
+      const res = await fetch(url, { headers });
+
+      // Hvis backenden svarer 404 på by-email når bruker ikke finnes, vis heller tom liste
+      if (res.status === 404) {
+        setItems([]);
+        return;
+      }
+
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
       const data: HistoryItem[] = await res.json();
       setItems(data);
     } catch (err) {

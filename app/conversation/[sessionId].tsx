@@ -7,14 +7,14 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
+  Platform,
   Pressable,
   RefreshControl,
   Text,
-  Platform,
-  View
+  View,
 } from "react-native";
 
-const isWeb = Platform.os = "web";
+const isWeb = (Platform.OS = "web");
 
 const BASE_URL = "https://innsikt-backend.fly.dev";
 
