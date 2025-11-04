@@ -10,7 +10,7 @@ import { Platform } from "react-native";
 const isAndroid = Platform.OS === "android";
 const isWeb = Platform.OS === "web";
 
-export const BASE_URL = "https://innsikt-backend.fly.dev"
+export const BASE_URL = "https://innsikt-backend.fly.dev";
 export async function sendChat(
   userId: number,
   scenarioId: number,
@@ -35,6 +35,20 @@ export async function sendChat(
 
   return (await response.json()) as any;
 }
+export async function postFeedback(sessionId: string) {
+  const payload = { sessionId }; // Rubric er valgfri i backend – default brukes
+  const res = await fetch(`${BASE_URL}/api/feedback`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const txt = await res.text().catch(() => "");
+    throw new Error(`HTTP ${res.status}: ${txt}`);
+  }
+  return (await res.json()) as { content: string; model: string };
+}
+
 export async function deleteConversationBySession(sessionId: string) {
   const res = await fetch(`${BASE_URL}/api/conversations/${sessionId}`, {
     method: 'DELETE',

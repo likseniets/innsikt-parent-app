@@ -21,7 +21,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Genererer en unik sessionId hver gang skjermen åpnes
 function newSessionId() {
-  return (typeof crypto !== "undefined" && "randomUUID" in crypto)
+  return typeof crypto !== "undefined" && "randomUUID" in crypto
     ? crypto.randomUUID()
     : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
@@ -68,7 +68,7 @@ export default function ChatBotScreen() {
         const jsonValue = await AsyncStorage.getItem(key);
         return jsonValue != null ? JSON.parse(jsonValue) : null; // Parse back to object/array
       } catch (error) {
-        console.error('Error retrieving data:', error);
+        console.error("Error retrieving data:", error);
         return null;
       }
     };
@@ -79,7 +79,7 @@ export default function ChatBotScreen() {
     ];
 
     setMessages(tempMessages);
-    const userData = await retrieveData('user');
+    const userData = await retrieveData("user");
 
     try {
       setInput("");
@@ -97,7 +97,10 @@ export default function ChatBotScreen() {
         (res as any)?.content ??
         "(tomt svar)";
 
-      setMessages([...tempMessages, { role: "assistant", content: assistantText }]);
+      setMessages([
+        ...tempMessages,
+        { role: "assistant", content: assistantText },
+      ]);
       console.log("Final res", res);
     } catch (error) {
       console.log(error);
@@ -119,15 +122,17 @@ export default function ChatBotScreen() {
           <Button
             title="Fullfør samtale"
             onPress={() =>
-              router.push({
+              router.replace({
                 pathname: "/feedback",
-                params: { title: title ? String(title) : "Scenario" },
+                params: { title: scenario, sessionId },
               })
             }
           />
         </View>
 
-        {title ? <Text style={ChatBotStyle.subtitle}>{String(title)}</Text> : null}
+        {title ? (
+          <Text style={ChatBotStyle.subtitle}>{String(title)}</Text>
+        ) : null}
 
         {/* Meldingsliste */}
         <View style={ChatBotStyle.chatContainer}>
