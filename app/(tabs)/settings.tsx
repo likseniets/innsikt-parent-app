@@ -1,8 +1,9 @@
 import BackgroundStyle from "@/styles/BackgroundStyle";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 
 type RowProps = { title: string; left?: React.ReactNode; onPress?: () => void };
 
@@ -16,6 +17,15 @@ const Row = ({ title, left, onPress }: RowProps) => (
     <Ionicons name="chevron-forward" size={18} color="#111" />
   </Pressable>
 );
+const handleLogout = async () => {
+  try {
+    await AsyncStorage.multiRemove(["user", "accessToken", "refreshToken"]);
+    router.replace("/login");
+  } catch (err) {
+    console.error("Logout failed:", err);
+    Alert.alert("Feil", "Klarte ikke å logge ut. Prøv igjen.");
+  }
+};
 
 export default function SettingsScreen() {
   return (
@@ -43,6 +53,7 @@ export default function SettingsScreen() {
               <Ionicons name="log-out-outline" size={18} color="#111" />
             </View>
           }
+          onPress={handleLogout}
         />
       </View>
     </BackgroundStyle>

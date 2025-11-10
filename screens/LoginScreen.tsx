@@ -1,28 +1,33 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
-import { authenticateUser } from '../lib/chatApi';
-import styles from '../styles/LoginScreenStyle';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
+import { useState } from "react";
+import { Pressable, Text, TextInput, View } from "react-native";
+import { authenticateUser } from "../lib/chatApi";
+import styles from "../styles/LoginScreenStyle";
 
-type Props = { onSuccess: () => void };
+type Props = { onSuccess?: () => void }; // <- gjort valgfri
 
 export default function LoginScreen({ onSuccess }: Props) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleLogin = async () => {
     try {
       const user = await authenticateUser(email, password);
-      console.log('User authenticated:', user);
-      const jsonValue = typeof user === 'object' ? JSON.stringify(user) : user;
-      await AsyncStorage.setItem('user', jsonValue);
-      console.log('Data stored successfully!');
-      onSuccess();
+      const jsonValue =
+        typeof user === "object" ? JSON.stringify(user) : String(user);
+      await AsyncStorage.setItem("user", jsonValue);
+
+      if (typeof onSuccess === "function") {
+        onSuccess();
+      } else {
+        // Ruteside uten props: naviger til hjem (bytt til din faktiske startside om nødvendig)
+        router.replace("/");
+      }
     } catch (err) {
-      console.error('Login failed:', err);
-      setError('Login failed. Please check your credentials and try again.');
+      console.error("Login failed:", err);
+      setError("Login failed. Please check your credentials and try again.");
     }
   };
 
@@ -40,7 +45,10 @@ export default function LoginScreen({ onSuccess }: Props) {
           autoCapitalize="none"
           keyboardType="email-address"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={(t) => {
+            setEmail(t);
+            if (error) setError("");
+          }}
           returnKeyType="next"
         />
 
@@ -51,7 +59,10 @@ export default function LoginScreen({ onSuccess }: Props) {
           secureTextEntry
           autoCapitalize="none"
           value={password}
-          onChangeText={setPassword}
+          onChangeText={(t) => {
+            setPassword(t);
+            if (error) setError("");
+          }}
           returnKeyType="done"
           onSubmitEditing={handleLogin}
         />

@@ -14,7 +14,7 @@ import {
 } from "react-native";
 
 // ✅ enkel lokal base-url (endre hvis du bruker annen port / http)
-const API = "https://innsikt-backend.fly.dev";
+const API = "http://localhost:5202";
 
 const isWeb = Platform.OS === "web";
 
