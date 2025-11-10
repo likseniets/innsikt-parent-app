@@ -131,7 +131,7 @@ export default function ChatBotScreen() {
         </View>
 
         {title ? (
-          <Text style={ChatBotStyle.subtitle}>{String(title)}</Text>
+          <Text style={ChatBotStyle.subtitle}>{String(description)}</Text>
         ) : null}
 
         {/* Meldingsliste */}

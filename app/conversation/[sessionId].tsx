@@ -16,7 +16,7 @@ import {
 
 const isWeb = (Platform.OS = "web");
 
-const BASE_URL = "https://innsikt-backend.fly.dev";
+const BASE_URL = "http://localhost:5202";
 
 type MessageDto = {
   role: "user" | "assistant";
