@@ -10,7 +10,7 @@ import { Platform } from "react-native";
 const isAndroid = Platform.OS === "android";
 const isWeb = Platform.OS === "web";
 
-export const BASE_URL = "http://localhost:5202";
+export const BASE_URL = "https://innsikt-backend.fly.dev";
 export async function sendChat(
   userId: number,
   scenarioId: number,
